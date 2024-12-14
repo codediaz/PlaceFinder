@@ -1,0 +1,69 @@
+# System-generated files
+.DS_Store
+Thumbs.db
+
+# Visual Studio user-specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE configuration files
+.idea/
+*.code-workspace
+
+# Build output directories
+bin/
+obj/
+out/
+
+# Dependency and package files
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Debugging configuration files
+*.log
+*.tlog
+*.pdb
+
+# Docker-related files
+docker-compose.override.yml
+*.dockerignore
+
+# Local configuration files
+appsettings.Development.json
+appsettings.Local.json
+
+# Published files
+publish/
+wwwroot/
+
+# Continuous integration (CI) files
+*.coverage
+*.coveragexml
+
+# Node.js-related files (if using npm or pnpm for frontend tools)
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+~$*
+*.tmp
+*.bak
+*.swp
+*._*
+
+# OS-generated files (Linux/Mac)
+*.swp
+*.swo
+*~
+
+# Ignore the entire wwwroot folder
+wwwroot/
