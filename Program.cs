@@ -7,6 +7,17 @@ DotNetEnv.Env.Load();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5172")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddHttpClient<FoursquareService>(client =>
 {
     client.BaseAddress = new Uri("https://api.foursquare.com/v3/");
@@ -17,6 +28,9 @@ builder.Services.AddHttpClient<FoursquareService>(client =>
 });
 
 var app = builder.Build();
+
+// CORS Allowed
+app.UseCors("AllowLocalhost");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
