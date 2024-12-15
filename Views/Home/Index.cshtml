@@ -12,29 +12,8 @@
         <p class="lead text-muted">Find the best spots in your area!</p>
     </div>
 
-    <!--Google Maps-->
+    <!-- Google Maps -->
     <div id="map" style="height: 500px; margin-top: 20px;"></div>
-
-    <script>
-        let map;
-
-        function initMap() {
-            // Inicializar el mapa centrado en Guayaquil
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: -2.170998, lng: -79.922359 }, // Coordenadas de Guayaquil
-                zoom: 13,
-            });
-        }
-
-        // Función para agregar marcadores
-        function addMarker(position, title) {
-            new google.maps.Marker({
-                position: position,
-                map: map,
-                title: title,
-            });
-        }
-    </script>
 
     <!-- Formulario de búsqueda -->
     <div class="card shadow-sm mb-4">
@@ -53,81 +32,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-               async function searchPlaces() {
-            const query = document.getElementById("query").value;
-            const location = document.getElementById("location").value;
-
-            if (!query || !location) {
-                alert("Please provide both query and location.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`/Places/Search?query=${query}&location=${location}`);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("Error response:", errorText);
-                    throw new Error("Failed to fetch places. Please check the server logs.");
-                }
-
-                const data = await response.json();
-
-                if (data.success) {
-                    console.log("Places:", data);
-                    // Procesar resultados
-                } else {
-                    alert(data.message || "No places found.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("An unexpected error occurred.");
-            }
-        }
-
-    </script>
-
-    <!-- Resultados de búsqueda -->
-    @if (Model != null && Model.Any())
-    {
-        <div class="mt-4">
-            <h3 class="text-center mb-4 fw-bold">Search Results</h3>
-            <div class="row">
-                @foreach (var place in Model)
-                {
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm border-0 text-center">
-                            <!-- Logo pequeño como imagen -->
-                            @if (!string.IsNullOrEmpty(place.Categories?.FirstOrDefault()?.IconUrl))
-                            {
-                                <img src="@place.Categories.FirstOrDefault().IconUrl"
-                                     class="rounded-circle mx-auto d-block mt-3"
-                                     alt="Logo"
-                                     style="width: 80px; height: 80px; object-fit: contain; background-color: #f8f9fa; padding: 10px;" />
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title text-primary fw-bold">@place.Name</h5>
-                                <p class="card-text"><strong>Category:</strong> @place.Categories?.FirstOrDefault()?.Name</p>
-                                <p class="card-text text-muted mb-2">Distance: @place.Distance meters</p>
-                                <p class="card-text text-muted">Timezone: @place.Timezone</p>
-                            </div>
-                            <!-- Botón para acciones futuras -->
-                            <div class="card-footer bg-white border-0">
-                                <button class="btn btn-outline-success btn-sm">Save Place</button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    }
-    else if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <!-- Mensaje de advertencia -->
-        <div class="alert alert-warning text-center mt-4" role="alert">
-            @ViewBag.Message
-        </div>
-    }
 </div>

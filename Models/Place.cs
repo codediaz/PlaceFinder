@@ -2,12 +2,6 @@
 
 namespace PlaceFinder.Models
 {
-    public class Geocode
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-    }
-
     public class Place
     {
         [JsonPropertyName("fsq_id")]
@@ -25,9 +19,22 @@ namespace PlaceFinder.Models
         [JsonPropertyName("categories")]
         public List<Category?>? Categories { get; set; }
 
-        public ICollection<SavedPlace>? SavedPlaces { get; set; }
+        [JsonPropertyName("geocodes")]
+        public Geocodes Geocodes { get; set; } = new Geocodes();
+    }
 
-        public Geocode Geocodes { get; set; }
+    public class Geocodes
+    {
+        [JsonPropertyName("main")]
+        public MainCoordinates Main { get; set; } = new MainCoordinates();
+    }
 
+    public class MainCoordinates
+    {
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
     }
 }
