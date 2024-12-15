@@ -39,6 +39,6 @@ namespace PlaceFinder.Services
 
     public class FoursquareResponse
     {
-        public List<Place> Results { get; set; }
+        public List<Place> Results { get; set; } = new List<Place>();
     }
 }
