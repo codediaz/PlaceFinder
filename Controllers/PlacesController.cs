@@ -8,21 +8,37 @@ namespace PlaceFinder.Controllers
     {
         private readonly FoursquareService _foursquareService;
 
-        public PlacesController(FoursquareService foursquareService)
+        public PlacesController(FoursquareService service)
         {
-            _foursquareService = foursquareService;
+            _foursquareService = service;
         }
 
-        public async Task<IActionResult> Search(string query, string location)
+        [HttpGet]
+        public async Task<IActionResult> Search(string? query, string? location)
         {
+
             if (string.IsNullOrWhiteSpace(query) || string.IsNullOrWhiteSpace(location))
             {
-                ViewBag.Message = "Both query and location are required.";
+                ViewBag.Message = "Please provide both query and location.";
                 return View(new List<Place>());
             }
 
-            var places = await _foursquareService.SearchPlacesAsync(query, location);
-            return View(places); 
+            try
+            {
+                var places = await _foursquareService.SearchPlacesAsync(query, location);
+
+                if (!places.Any())
+                {
+                    ViewBag.Message = "No places found. Try another search.";
+                }
+
+                return View(places);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = $"An error occurred: {ex.Message}";
+                return View(new List<Place>());
+            }
         }
 
     }
