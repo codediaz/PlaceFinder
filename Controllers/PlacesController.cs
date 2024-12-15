@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using PlaceFinder.Models;
 using PlaceFinder.Services;
 
@@ -16,29 +17,32 @@ namespace PlaceFinder.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(string? query, string? location)
         {
-
+        
             if (string.IsNullOrWhiteSpace(query) || string.IsNullOrWhiteSpace(location))
             {
-                ViewBag.Message = "Please provide both query and location.";
-                return View(new List<Place>());
+                TempData["Message"] = "Please provide both query and location.";
+                return RedirectToAction("Index", "Home");
             }
 
             try
             {
+           
                 var places = await _foursquareService.SearchPlacesAsync(query, location);
 
                 if (!places.Any())
                 {
-                    ViewBag.Message = "No places found. Try another search.";
+                    TempData["Message"] = "No places found. Try another search.";
                 }
 
-                return View(places);
+                TempData["Results"] = JsonSerializer.Serialize(places);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = $"An error occurred: {ex.Message}";
-                return View(new List<Place>());
+          
+                TempData["Error"] = $"An error occurred: {ex.Message}";
             }
+
+            return RedirectToAction("Index", "Home");
         }
 
     }
