@@ -67,3 +67,6 @@ yarn-error.log*
 
 # Ignore the entire wwwroot folder
 wwwroot/
+
+#Ignore configs
+.env
