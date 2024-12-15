@@ -12,30 +12,82 @@
         <p class="lead text-muted">Find the best spots in your area!</p>
     </div>
 
+    <!--Google Maps-->
+    <div id="map" style="height: 500px; margin-top: 20px;"></div>
+
+    <script>
+        let map;
+
+        function initMap() {
+            // Inicializar el mapa centrado en Guayaquil
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -2.170998, lng: -79.922359 }, // Coordenadas de Guayaquil
+                zoom: 13,
+            });
+        }
+
+        // Función para agregar marcadores
+        function addMarker(position, title) {
+            new google.maps.Marker({
+                position: position,
+                map: map,
+                title: title,
+            });
+        }
+    </script>
+
     <!-- Formulario de búsqueda -->
-    <div class="card shadow-sm mb-4 p-4">
-        <h4 class="mb-3">Search for Places</h4>
-        <form asp-action="Search" asp-controller="Places" method="get">
-            <div class="row g-3">
-                <!-- Campo Query -->
-                <div class="col-md-5">
-                    <label for="query" class="form-label">Search Query</label>
-                    <input type="text" class="form-control" id="query" name="query" placeholder="e.g., Bakery" required>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Search Places</h4>
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <input type="text" class="form-control" id="query" placeholder="Search Query (e.g., Bakery)">
                 </div>
-
-                <!-- Campo Location -->
-                <div class="col-md-5">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" name="location" placeholder="e.g., New York" required>
+                <div class="col-md-5 mb-3">
+                    <input type="text" class="form-control" id="location" placeholder="Location (e.g., New York)">
                 </div>
-
-                <!-- Botón de búsqueda -->
-                <div class="col-md-2 d-grid align-items-end">
-                    <button type="submit" class="btn btn-primary">Search</button>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="searchPlaces()">Search</button>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
+
+    <script>
+               async function searchPlaces() {
+            const query = document.getElementById("query").value;
+            const location = document.getElementById("location").value;
+
+            if (!query || !location) {
+                alert("Please provide both query and location.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Places/Search?query=${query}&location=${location}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Error response:", errorText);
+                    throw new Error("Failed to fetch places. Please check the server logs.");
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log("Places:", data);
+                    // Procesar resultados
+                } else {
+                    alert(data.message || "No places found.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An unexpected error occurred.");
+            }
+        }
+
+    </script>
 
     <!-- Resultados de búsqueda -->
     @if (Model != null && Model.Any())

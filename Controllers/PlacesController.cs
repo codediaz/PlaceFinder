@@ -17,32 +17,26 @@ namespace PlaceFinder.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(string? query, string? location)
         {
-        
             if (string.IsNullOrWhiteSpace(query) || string.IsNullOrWhiteSpace(location))
             {
-                TempData["Message"] = "Please provide both query and location.";
-                return RedirectToAction("Index", "Home");
+                return Json(new { success = false, message = "Please provide both query and location." });
             }
 
             try
             {
-           
                 var places = await _foursquareService.SearchPlacesAsync(query, location);
 
                 if (!places.Any())
                 {
-                    TempData["Message"] = "No places found. Try another search.";
+                    return Json(new { success = false, message = "No places found." });
                 }
 
-                TempData["Results"] = JsonSerializer.Serialize(places);
+                return Json(new { success = true, data = places });
             }
             catch (Exception ex)
             {
-          
-                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return Json(new { success = false, message = ex.Message });
             }
-
-            return RedirectToAction("Index", "Home");
         }
 
     }
