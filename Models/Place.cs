@@ -19,6 +19,7 @@ namespace PlaceFinder.Models
         [JsonPropertyName("categories")]
         public List<Category?>? Categories { get; set; }
 
+        public ICollection<SavedPlace>? SavedPlaces { get; set; }
 
     }
 }
