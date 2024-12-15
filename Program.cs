@@ -1,4 +1,6 @@
 using PlaceFinder.Services;
+using PlaceFinder.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddHttpClient<FoursquareService>(client =>
 {
