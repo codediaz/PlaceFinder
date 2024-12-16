@@ -26,6 +26,8 @@ namespace PlaceFinder.Models
         public Geocodes Geocodes { get; set; } = new Geocodes();
 
         public ICollection<SavedPlace> SavedPlaces { get; set; } = new List<SavedPlace>();
+
+        public ICollection<Suggestion> Suggestions { get; set; } = new List<Suggestion>();
     }
 
     [NotMapped]

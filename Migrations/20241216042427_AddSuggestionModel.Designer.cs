@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlaceFinder.Data;
 
@@ -10,9 +11,11 @@ using PlaceFinder.Data;
 namespace PlaceFinder.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241216042427_AddSuggestionModel")]
+    partial class AddSuggestionModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace PlaceFinder.Migrations
             modelBuilder.Entity("PlaceFinder.Models.Suggestion", b =>
                 {
                     b.HasOne("PlaceFinder.Models.Place", "Place")
-                        .WithMany("Suggestions")
+                        .WithMany()
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -162,8 +165,6 @@ namespace PlaceFinder.Migrations
             modelBuilder.Entity("PlaceFinder.Models.Place", b =>
                 {
                     b.Navigation("SavedPlaces");
-
-                    b.Navigation("Suggestions");
                 });
 
             modelBuilder.Entity("PlaceFinder.Models.User", b =>
