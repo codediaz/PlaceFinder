@@ -20,15 +20,25 @@ builder.Services.AddCors(options =>
     });
 });
 
- // AUTH
+// AUTH
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
+        options.LoginPath = "/Account/Login"; // Redirigir al login
         options.AccessDeniedPath = "/Account/Login";
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/Places/SavePlace"))
+            {
+                context.Response.StatusCode = 401;
+            }
+            else
+            {
+                context.Response.Redirect(context.RedirectUri);
+            }
+            return Task.CompletedTask;
+        };
     });
-
 builder.Services.AddAuthorization();
 
 var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
