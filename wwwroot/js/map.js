@@ -1,6 +1,7 @@
 ﻿let map;
 let markers = [];
 
+// Inicializar el mapa
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: -2.170998, lng: -79.922359 }, // Guayaquil
@@ -8,20 +9,53 @@ function initMap() {
     });
 }
 
-function addMarker(position, title) {
+// Agregar marcador con ícono personalizado e infowindow
+function addMarker(place) {
+    const position = {
+        lat: place.geocodes.main.latitude,
+        lng: place.geocodes.main.longitude
+    };
+
+    const iconUrl = place.categories?.[0]?.icon?.prefix + "bg_32" + place.categories?.[0]?.icon?.suffix || null;
+
     const marker = new google.maps.Marker({
         position: position,
         map: map,
-        title: title,
+        title: place.name,
+        icon: iconUrl || "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
     });
+
+    const infoWindowContent = `
+        <div>
+            <h6>${place.name}</h6>
+            <p>Distance: ${place.distance} meters</p>
+            <p>Timezone: ${place.timezone || "N/A"}</p>
+            <button onclick="savePlace('${place.fsq_id}', '${place.name}', ${place.distance}, '${place.timezone}')"
+                    class="btn btn-primary btn-sm">
+                Save to Favorites
+            </button>
+        </div>
+    `;
+
+    const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent
+    });
+
+    marker.addListener("click", () => {
+        infoWindow.open(map, marker);
+    });
+
     markers.push(marker);
 }
 
+
+// Limpiar marcadores existentes
 function clearMarkers() {
-    markers.forEach(marker => marker.setMap(null)); 
-    markers = []; 
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
 }
 
+// Buscar lugares y agregar marcadores
 async function searchPlaces() {
     const query = document.getElementById("query").value;
     const location = document.getElementById("location").value;
@@ -38,7 +72,6 @@ async function searchPlaces() {
         if (result.success && Array.isArray(result.data)) {
             plotPlacesOnMap(result.data);
         } else {
-            console.warn("No places found or error occurred:", result.message);
             alert(result.message || "No places found.");
         }
     } catch (error) {
@@ -47,52 +80,26 @@ async function searchPlaces() {
     }
 }
 
-async function savePlace(placeId) {
-    try {
-        const response = await fetch(`/Places/SavePlace`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ placeId })
-        });
-
-        if (response.status === 401) {
-            // Redirigir al login si no está autenticado
-            window.location.href = "/Account/Login";
-            return;
-        }
-
-        const result = await response.json();
-        alert(result.message || "Place saved!");
-    } catch (error) {
-        console.error("Error saving place:", error);
-        alert("Failed to save place.");
-    }
-}
-
+// Mostrar lugares en el mapa
 function plotPlacesOnMap(places) {
-
     clearMarkers();
-
     if (places.length === 0) {
         alert("No places found.");
         return;
     }
 
+    // Centrar mapa en el primer lugar
     setCenter(places);
 
+    // Agregar marcadores
     places.forEach(place => {
         if (place.geocodes && place.geocodes.main) {
-            const position = {
-                lat: place.geocodes.main.latitude,
-                lng: place.geocodes.main.longitude
-            };
-            addMarker(position, place.name);
-        } else {
-            console.warn("Missing coordinates for place:", place);
+            addMarker(place);
         }
     });
 }
 
+// Centrar el mapa
 function setCenter(places) {
     const firstPlace = places[0];
     if (firstPlace.geocodes && firstPlace.geocodes.main) {
@@ -100,8 +107,37 @@ function setCenter(places) {
             lat: firstPlace.geocodes.main.latitude,
             lng: firstPlace.geocodes.main.longitude
         };
-
         map.setCenter(centerPosition);
         map.setZoom(12);
     }
 }
+
+async function savePlace(placeId, name, distance, timezone) {
+    try {
+        const response = await fetch(`/Places/SavePlace`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                placeId: placeId,
+                name: name,
+                distance: distance,
+                timezone: timezone
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(result.message || "Place saved successfully!");
+        } else {
+            alert(result.message || "Failed to save place.");
+        }
+    } catch (error) {
+        console.error("Error saving place:", error);
+        alert("An unexpected error occurred.");
+    }
+}
+
+

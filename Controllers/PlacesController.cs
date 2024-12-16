@@ -20,6 +20,14 @@ namespace PlaceFinder.Controllers
             _context = context;
         }
 
+        public class SavePlaceRequest
+        {
+            public string PlaceId { get; set; }
+            public string Name { get; set; }
+            public int Distance { get; set; }
+            public string Timezone { get; set; }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Search(string? query, string? location)
         {
@@ -47,13 +55,44 @@ namespace PlaceFinder.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> SavePlace(string placeId)
+        public async Task<IActionResult> SavePlace([FromBody] SavePlaceRequest request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.PlaceId))
+            {
+                return Json(new { success = false, message = "Place ID is required." });
+            }
+
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            // Verificar si el lugar ya existe en Places
+            var place = _context.Places.FirstOrDefault(p => p.Id == request.PlaceId);
+
+            if (place == null)
+            {
+                // Insertar el lugar con los detalles completos
+                place = new Place
+                {
+                    Id = request.PlaceId,
+                    Name = request.Name,
+                    Distance = request.Distance,
+                    Timezone = request.Timezone
+                };
+
+                _context.Places.Add(place);
+                await _context.SaveChangesAsync();
+            }
+
+            // Verificar si ya existe en favoritos
+            if (_context.SavedPlaces.Any(sp => sp.UserId == userId && sp.PlaceId == request.PlaceId))
+            {
+                return Json(new { success = false, message = "Place is already saved." });
+            }
+
+            // Insertar en SavedPlaces
             var savedPlace = new SavedPlace
             {
                 UserId = userId,
-                PlaceId = placeId,
+                PlaceId = request.PlaceId,
                 SavedAt = DateTime.UtcNow
             };
 
