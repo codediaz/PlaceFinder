@@ -32,4 +32,19 @@
             </div>
         </div>
     </div>
+
+    <div class="card mb-3" id="place-list">
+        @if (Model != null)
+        {
+            foreach (var place in Model)
+            {
+                <div class="card-body">
+                    <h5>@place.Name</h5>
+                    <button class="btn btn-success" onclick="savePlace('@place.Id')">
+                        Save Place
+                    </button>
+                </div>
+            }
+        }
+    </div>
 </div>

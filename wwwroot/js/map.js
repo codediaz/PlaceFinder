@@ -47,6 +47,28 @@ async function searchPlaces() {
     }
 }
 
+async function savePlace(placeId) {
+    try {
+        const response = await fetch(`/Places/SavePlace`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ placeId })
+        });
+
+        if (response.status === 401) {
+            // Redirigir al login si no está autenticado
+            window.location.href = "/Account/Login";
+            return;
+        }
+
+        const result = await response.json();
+        alert(result.message || "Place saved!");
+    } catch (error) {
+        console.error("Error saving place:", error);
+        alert("Failed to save place.");
+    }
+}
+
 function plotPlacesOnMap(places) {
 
     clearMarkers();

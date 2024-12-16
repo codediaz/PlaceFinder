@@ -20,6 +20,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+ // AUTH
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/Login";
+    });
+
+builder.Services.AddAuthorization();
+
 var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
 
 if (string.IsNullOrEmpty(connectionString))
@@ -57,6 +68,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
