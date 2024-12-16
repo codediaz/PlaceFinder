@@ -12,6 +12,7 @@ namespace PlaceFinder.Data
         public DbSet<User> Users { get; set; }
         public DbSet<SavedPlace> SavedPlaces { get; set; }
         public DbSet<Place> Places { get; set; }
+        public DbSet<Suggestion> Suggestions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +25,17 @@ namespace PlaceFinder.Data
                 .HasOne(sp => sp.Place)
                 .WithMany(p => p.SavedPlaces)
                 .HasForeignKey(sp => sp.PlaceId);
+
+            modelBuilder.Entity<Suggestion>()
+                .HasOne(s => s.Place)
+                .WithMany()
+                .HasForeignKey(s => s.PlaceId);
+
+            modelBuilder.Entity<Suggestion>()
+                .HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId);
+
 
             base.OnModelCreating(modelBuilder);
         }
