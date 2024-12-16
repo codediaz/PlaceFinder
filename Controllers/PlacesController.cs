@@ -115,5 +115,62 @@ namespace PlaceFinder.Controllers
 
             return PartialView("_FavoritesList", favorites);
         }
+
+        [HttpGet]
+        public IActionResult GetSuggestions(string placeId)
+        {
+            if (string.IsNullOrWhiteSpace(placeId))
+            {
+                return Json(new { success = false, message = "Place ID is required." });
+            }
+
+            var suggestions = _context.Suggestions
+                .Where(s => s.PlaceId == placeId)
+                .OrderByDescending(s => s.CreatedAt)
+                .Select(s => new
+                {
+                    s.Content,
+                    s.UserId,
+                    s.CreatedAt
+                })
+                .ToList();
+
+            return Json(new { success = true, data = suggestions });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSuggestion([FromBody] SuggestionRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Content) || string.IsNullOrWhiteSpace(request.PlaceId))
+            {
+                return Json(new { success = false, message = "Invalid suggestion data." });
+            }
+
+            // Determinar el userId
+            int userId = User.Identity.IsAuthenticated
+                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+                : 0; // Usuario anónimo
+
+            var suggestion = new Suggestion
+            {
+                UserId = userId,
+                PlaceId = request.PlaceId,
+                Content = request.Content,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Suggestions.Add(suggestion);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Suggestion added successfully!" });
+        }
+
+
+        public class SuggestionRequest
+        {
+            public string PlaceId { get; set; }
+            public string Content { get; set; }
+        }
+
     }
 }
