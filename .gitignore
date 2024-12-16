@@ -40,7 +40,6 @@ appsettings.Local.json
 
 # Published files
 publish/
-wwwroot/
 
 # Continuous integration (CI) files
 *.coverage
@@ -66,4 +65,9 @@ yarn-error.log*
 *~
 
 # Ignore the entire wwwroot folder
-wwwroot/
+wwwroot/lib/
+wwwroot/node_modules/
+wwwroot/*.map
+
+#Ignore configs
+.env

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<PlaceFinder.Models.Place>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var place in Model)
+        {
+            <li class="list-group-item">
+                <!-- Detalles del lugar -->
+                <div>
+                    <strong>@place.Name</strong><br />
+                    <small>Distance: @place.Distance meters</small><br />
+                    <small>Timezone: @place.Timezone</small>
+                </div>
+
+                <!-- Sugerencias relacionadas -->
+                @if (place.Suggestions != null && place.Suggestions.Any())
+                {
+                    <hr />
+                    <strong>Suggestions:</strong>
+                    <ul class="mt-2">
+                        @foreach (var suggestion in place.Suggestions)
+                        {
+                            <li>
+                                <p class="mb-0">@suggestion.Content</p>
+                                <small class="text-muted">
+                                    By @(suggestion.UserId == 0 ? "Anonymous" : $"User #{suggestion.UserId}") on @suggestion.CreatedAt.ToString("g")
+                                </small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mt-2">No suggestions available.</p>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No saved places found.</p>
+}
