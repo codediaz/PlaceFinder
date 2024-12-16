@@ -92,16 +92,17 @@ namespace PlaceFinder.Controllers
 
             // Autenticar al usuario
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+    };
 
             var claimsIdentity = new ClaimsIdentity(claims, "login");
             await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity));
 
-            return Json(new { success = true });
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
+
 
         // Logout
         [HttpPost]

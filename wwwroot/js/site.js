@@ -10,10 +10,10 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Cerrar modal y refrescar la página
+                    // Cerrar modal y redirigir siempre a Home
                     const modal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
                     modal.hide();
-                    location.reload();
+                    window.location.href = data.redirectUrl; // Redirige a Home
                 } else {
                     // Mostrar error en el formulario
                     document.getElementById("loginError").innerText = data.error || "Invalid credentials.";
@@ -27,6 +27,7 @@
             });
     }
 });
+
 
 function loadLogin() {
     fetch('/Account/Login')
