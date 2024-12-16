@@ -16,22 +16,22 @@ function addMarker(place) {
         lng: place.geocodes.main.longitude
     };
 
-    // Construir ícono personalizado (si existe)
     const iconUrl = place.categories?.[0]?.icon?.prefix + "bg_32" + place.categories?.[0]?.icon?.suffix || null;
 
     const marker = new google.maps.Marker({
         position: position,
         map: map,
         title: place.name,
-        icon: iconUrl || "http://maps.google.com/mapfiles/ms/icons/red-dot.png" // Ícono por defecto
+        icon: iconUrl || "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
     });
 
-    // Infowindow con detalles y botón de guardar
     const infoWindowContent = `
         <div>
             <h6>${place.name}</h6>
             <p>Distance: ${place.distance} meters</p>
-            <button onclick="savePlace('${place.fsq_id}')" class="btn btn-primary btn-sm">
+            <p>Timezone: ${place.timezone || "N/A"}</p>
+            <button onclick="savePlace('${place.fsq_id}', '${place.name}', ${place.distance}, '${place.timezone}')"
+                    class="btn btn-primary btn-sm">
                 Save to Favorites
             </button>
         </div>
@@ -112,14 +112,19 @@ function setCenter(places) {
     }
 }
 
-async function savePlace(placeId) {
+async function savePlace(placeId, name, distance, timezone) {
     try {
         const response = await fetch(`/Places/SavePlace`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ placeId: placeId }) // Enviar como un objeto JSON
+            body: JSON.stringify({
+                placeId: placeId,
+                name: name,
+                distance: distance,
+                timezone: timezone
+            })
         });
 
         const result = await response.json();

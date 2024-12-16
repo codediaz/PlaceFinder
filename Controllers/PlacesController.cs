@@ -23,6 +23,9 @@ namespace PlaceFinder.Controllers
         public class SavePlaceRequest
         {
             public string PlaceId { get; set; }
+            public string Name { get; set; }
+            public int Distance { get; set; }
+            public string Timezone { get; set; }
         }
 
         [HttpGet]
@@ -66,13 +69,13 @@ namespace PlaceFinder.Controllers
 
             if (place == null)
             {
-                // Insertar el lugar en la tabla Places si no existe
+                // Insertar el lugar con los detalles completos
                 place = new Place
                 {
                     Id = request.PlaceId,
-                    Name = "Unknown", // Por defecto, hasta obtener más detalles
-                    Distance = 0,
-                    Timezone = "Unknown"
+                    Name = request.Name,
+                    Distance = request.Distance,
+                    Timezone = request.Timezone
                 };
 
                 _context.Places.Add(place);
@@ -85,7 +88,7 @@ namespace PlaceFinder.Controllers
                 return Json(new { success = false, message = "Place is already saved." });
             }
 
-            // Insertar el lugar en SavedPlaces
+            // Insertar en SavedPlaces
             var savedPlace = new SavedPlace
             {
                 UserId = userId,
@@ -98,7 +101,6 @@ namespace PlaceFinder.Controllers
 
             return Json(new { success = true, message = "Place saved successfully!" });
         }
-
 
         [Authorize]
         [HttpGet]
