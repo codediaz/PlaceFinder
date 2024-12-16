@@ -16,7 +16,13 @@ namespace PlaceFinder.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-             modelBuilder.Entity<SavedPlace>()
+            modelBuilder.Entity<Place>()
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Suggestion>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<SavedPlace>()
                 .HasOne(sp => sp.User)
                 .WithMany(u => u.SavedPlaces)
                 .HasForeignKey(sp => sp.UserId);
@@ -28,8 +34,9 @@ namespace PlaceFinder.Data
 
             modelBuilder.Entity<Suggestion>()
                 .HasOne(s => s.Place)
-                .WithMany()
-                .HasForeignKey(s => s.PlaceId);
+                .WithMany(p => p.Suggestions)
+                .HasForeignKey(s => s.PlaceId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Suggestion>()
                 .HasOne(s => s.User)

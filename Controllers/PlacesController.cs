@@ -136,20 +136,22 @@ namespace PlaceFinder.Controllers
         }
 
 
-
         [Authorize]
         [HttpGet]
         public IActionResult GetFavorites()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
             var favorites = _context.SavedPlaces
                 .Include(sp => sp.Place)
+                .ThenInclude(p => p.Suggestions) // Incluir sugerencias relacionadas
                 .Where(sp => sp.UserId == userId)
                 .Select(sp => sp.Place)
                 .ToList();
 
             return PartialView("_FavoritesList", favorites);
         }
+
 
         [HttpGet]
         public IActionResult GetSuggestions(string placeId)
