@@ -53,9 +53,39 @@ namespace PlaceFinder.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> SavePlace([FromBody] SavePlaceRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.PlaceId))
+            {
+                return Json(new { success = false, message = "Place ID is required." });
+            }
+
+            // Verificar si el lugar ya existe en Places
+            var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == request.PlaceId);
+
+            if (place == null)
+            {
+                // Insertar el lugar con los detalles completos
+                place = new Place
+                {
+                    Id = request.PlaceId,
+                    Name = request.Name,
+                    Distance = request.Distance,
+                    Timezone = request.Timezone
+                };
+
+                _context.Places.Add(place);
+                await _context.SaveChangesAsync();
+            }
+
+            // Retornar éxito sin depender de usuario autenticado
+            return Json(new { success = true, message = "Place saved successfully!" });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> SavePlaceFavorite([FromBody] SavePlaceRequest request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.PlaceId))
             {
@@ -65,7 +95,7 @@ namespace PlaceFinder.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             // Verificar si el lugar ya existe en Places
-            var place = _context.Places.FirstOrDefault(p => p.Id == request.PlaceId);
+            var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == request.PlaceId);
 
             if (place == null)
             {
@@ -83,12 +113,15 @@ namespace PlaceFinder.Controllers
             }
 
             // Verificar si ya existe en favoritos
-            if (_context.SavedPlaces.Any(sp => sp.UserId == userId && sp.PlaceId == request.PlaceId))
+            var existingFavorite = await _context.SavedPlaces
+                .FirstOrDefaultAsync(sp => sp.UserId == userId && sp.PlaceId == request.PlaceId);
+
+            if (existingFavorite != null)
             {
-                return Json(new { success = false, message = "Place is already saved." });
+                return Json(new { success = false, message = "Place is already in favorites." });
             }
 
-            // Insertar en SavedPlaces
+            // Guardar en favoritos
             var savedPlace = new SavedPlace
             {
                 UserId = userId,
@@ -99,8 +132,10 @@ namespace PlaceFinder.Controllers
             _context.SavedPlaces.Add(savedPlace);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Place saved successfully!" });
+            return Json(new { success = true, message = "Place added to favorites!" });
         }
+
+
 
         [Authorize]
         [HttpGet]
@@ -138,6 +173,7 @@ namespace PlaceFinder.Controllers
             return Json(new { success = true, data = suggestions });
         }
 
+
         [HttpPost]
         public async Task<IActionResult> AddSuggestion([FromBody] SuggestionRequest request)
         {
@@ -146,14 +182,30 @@ namespace PlaceFinder.Controllers
                 return Json(new { success = false, message = "Invalid suggestion data." });
             }
 
-            // Determinar el userId
-            int userId = User.Identity.IsAuthenticated
-                ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
-                : 0; // Usuario anónimo
+            // Verificar si el lugar existe, si no, lo guardamos
+            var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == request.PlaceId);
 
+            if (place == null)
+            {
+                // Guardar el lugar con valores proporcionados o predeterminados
+                place = new Place
+                {
+                    Id = request.PlaceId,
+                    Name = !string.IsNullOrWhiteSpace(request.Name) ? request.Name : "Unknown Place",
+                    Distance = request.Distance > 0 ? request.Distance : 0,
+                    Timezone = !string.IsNullOrWhiteSpace(request.Timezone) ? request.Timezone : "N/A"
+                };
+
+                _context.Places.Add(place);
+                await _context.SaveChangesAsync();
+            }
+
+            // Guardar la sugerencia
             var suggestion = new Suggestion
             {
-                UserId = userId,
+                UserId = User.Identity.IsAuthenticated
+                    ? int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value) // Usuario autenticado
+                    : 0, // Usuario anónimo
                 PlaceId = request.PlaceId,
                 Content = request.Content,
                 CreatedAt = DateTime.UtcNow
@@ -166,10 +218,14 @@ namespace PlaceFinder.Controllers
         }
 
 
+
         public class SuggestionRequest
         {
             public string PlaceId { get; set; }
             public string Content { get; set; }
+            public string? Name { get; internal set; }
+            public int Distance { get; internal set; }
+            public string? Timezone { get; internal set; }
         }
 
     }

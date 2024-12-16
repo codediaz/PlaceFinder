@@ -28,7 +28,7 @@ builder.Services.AddAuthentication("CookieAuth")
         options.AccessDeniedPath = "/Account/Login";
         options.Events.OnRedirectToLogin = context =>
         {
-            if (context.Request.Path.StartsWithSegments("/Places/SavePlace"))
+            if (context.Request.Path.StartsWithSegments("/Places/SavePlaceFavorite"))
             {
                 context.Response.StatusCode = 401;
             }
