@@ -1,0 +1,21 @@
+﻿@model IEnumerable<PlaceFinder.Models.Place>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var place in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@place.Name</strong><br />
+                    <small>Distance: @place.Distance meters</small>
+                </div>
+                <span class="badge bg-primary rounded-pill">@place.Timezone</span>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No saved places found.</p>
+}

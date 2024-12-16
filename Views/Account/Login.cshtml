@@ -1,0 +1,22 @@
+﻿@{
+    Layout = null;
+}
+<form id="loginForm" method="post" asp-action="Login">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" required />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" required />
+    </div>
+    <div id="loginError" class="text-danger mb-3" style="display: none;"></div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+    <div class="text-center mt-3">
+        <small>
+            Don't have an account?
+            <a href="#" onclick="loadRegister()">Register here</a>
+        </small>
+    </div>
+</form>
+

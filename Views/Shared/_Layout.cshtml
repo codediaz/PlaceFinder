@@ -71,12 +71,24 @@
 
             <!-- Sección de la derecha -->
             <div class="navbar-right">
-                <!-- Corazón -->
-                <i class="bi bi-heart-fill icon-heart"></i>
-                <!-- Botón Iniciar sesión -->
-                <a asp-controller="Account" asp-action="Login" class="login-btn">
-                    <i class="bi bi-person-circle"></i> Iniciar sesión
-                </a>
+				<!-- Ícono de favoritos -->
+                <i class="bi bi-heart-fill icon-heart" onclick="handleFavoritesClick()"></i>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <!-- Mostrar el nombre del usuario autenticado -->
+                    <span class="fw-bold text-primary">Hello, @User.Identity.Name!</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger ms-2">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <!-- Botón Iniciar sesión -->
+                    <a href="#" class="login-btn" data-bs-toggle="modal" data-bs-target="#authModal" onclick="loadLogin()">
+                        <i class="bi bi-person-circle"></i> Iniciar sesión
+                    </a>
+                }
             </div>
         </nav>
     </header>
@@ -87,6 +99,38 @@
             @RenderBody()
         </main>
     </div>
+
+    <!-- Login/Register Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="authModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para favoritos -->
+    <div class="modal fade" id="favoritesModal" tabindex="-1" aria-labelledby="favoritesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="favoritesModalLabel">My Favorites</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="favoritesModalBody">
+                    <!-- Contenido dinámico -->
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- Scripts -->
     <script src="~/js/map.js"></script>
