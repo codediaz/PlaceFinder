@@ -1,7 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PlaceFinder.Models
 {
+    [NotMapped]
     public class Icon
     {
         [JsonPropertyName("prefix")]

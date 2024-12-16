@@ -22,7 +22,12 @@ builder.Services.AddCors(options =>
 
 var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("MYSQL_CONNECTION_STRING is not defined or invalid.");
+}
+
+builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddHttpClient<FoursquareService>(client =>

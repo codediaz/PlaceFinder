@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PlaceFinder.Models
 {
@@ -16,19 +17,25 @@ namespace PlaceFinder.Models
         [JsonPropertyName("timezone")]
         public string Timezone { get; set; } = string.Empty;
 
+        [NotMapped]
         [JsonPropertyName("categories")]
         public List<Category?>? Categories { get; set; }
 
+        [NotMapped]
         [JsonPropertyName("geocodes")]
         public Geocodes Geocodes { get; set; } = new Geocodes();
+
+        public ICollection<SavedPlace> SavedPlaces { get; set; } = new List<SavedPlace>();
     }
 
+    [NotMapped]
     public class Geocodes
     {
         [JsonPropertyName("main")]
         public MainCoordinates Main { get; set; } = new MainCoordinates();
     }
 
+   [NotMapped]
     public class MainCoordinates
     {
         [JsonPropertyName("latitude")]
