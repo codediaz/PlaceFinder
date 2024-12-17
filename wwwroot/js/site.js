@@ -93,3 +93,17 @@ function showFeedbackMessage(type, message) {
     `;
     setTimeout(() => container.innerHTML = "", 5000); // Desaparece después de 5 segundos
 }
+
+function scrollToSearch() {
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+}
+
+function scrollToMap() {
+    const mapSection = document.getElementById("map");
+    if (mapSection) {
+        mapSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        setTimeout(() => {
+            window.scrollBy(0, -12); 
+        }, 450); 
+    }
+}

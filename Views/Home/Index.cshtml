@@ -1,28 +1,41 @@
-﻿<div class="container mt-5">
-    <!-- Encabezado -->
-    <div class="text-center mb-4">
-        <h1 class="display-4 fw-bold text-primary">Place Finder 🌍</h1>
-        <p class="lead text-secondary">Discover and save your favorite places effortlessly!</p>
+﻿<div class="container-fluid mt-5 px-4">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold text-dark">🌍 Place Finder</h1>
+        <p class="lead text-muted">
+            Effortlessly discover, explore, and save your favorite places around the world!
+        </p>
+        <button class="btn btn-primary btn-lg shadow-sm fw-bold px-4 py-2" onclick="scrollToSearch()">
+            Start Exploring <i class="bi bi-arrow-down-circle ms-2"></i>
+        </button>
     </div>
 
-    <!-- Tarjeta de búsqueda -->
-    <div class="card shadow-sm mb-4 border-0 rounded-3">
-        <div class="card-body">
-            <h4 class="mb-3 text-center text-primary">🔍 Find Places</h4>
+    <!-- Search Section -->
+    <div class="card border-0 shadow-lg mb-4 rounded-4 overflow-hidden">
+        <div class="card-body p-4" style="background: linear-gradient(135deg, #4e73df, #224abe); color: white;">
+            <h4 class="mb-4 text-center fw-bold">
+                <i class="bi bi-search"></i> Find Your Next Favorite Spot
+            </h4>
             <div class="row g-3">
                 <div class="col-md-5">
-                    <input type="text" class="form-control border-0 shadow-sm" id="query" placeholder="Search Query (e.g., Café)">
+                    <input type="text" class="form-control border-0 rounded-3 shadow-sm" id="query" placeholder="What are you looking for? (e.g., Coffee Shop)">
                 </div>
                 <div class="col-md-5">
-                    <input type="text" class="form-control border-0 shadow-sm" id="location" placeholder="Location (e.g., New York)">
+                    <input type="text" class="form-control border-0 rounded-3 shadow-sm" id="location" placeholder="Enter a location (e.g., San Francisco)">
                 </div>
                 <div class="col-md-2 text-center">
-                    <button class="btn btn-primary w-100 shadow-sm fw-bold" onclick="searchPlaces()">Search</button>
+                    <button class="btn btn-light fw-bold w-100 rounded-3 shadow-sm"
+                            onclick="searchPlaces(); scrollToMap();"
+                            style="color: #224abe;">
+                        Search <i class="bi bi-arrow-right-circle ms-1"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Google Maps -->
-    <div id="map" class="rounded shadow-sm" style="height: 500px; margin-top: 20px;"></div>
+    <!-- Google Maps Section -->
+    <div class="rounded-4 shadow-lg overflow-hidden">
+        <div id="map" style="height: 75vh; width: 100%;"></div>
+    </div>
 </div>
