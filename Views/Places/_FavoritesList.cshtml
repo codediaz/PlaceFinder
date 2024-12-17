@@ -2,43 +2,61 @@
 
 @if (Model.Any())
 {
-    <ul class="list-group">
-        @foreach (var place in Model)
-        {
-            <li class="list-group-item">
-                <!-- Detalles del lugar -->
-                <div>
-                    <strong>@place.Name</strong><br />
-                    <small>Distance: @place.Distance meters</small><br />
-                    <small>Timezone: @place.Timezone</small>
-                </div>
+    <div class="container-fluid">
+        <div class="row g-4">
+            @foreach (var place in Model)
+            {
+                <div class="col-lg-6 col-12">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body">
+                            <!-- Encabezado del lugar -->
+                            <div class="d-flex align-items-center mb-3">
+                                <div>
+                                    <h5 class="card-title text-primary fw-bold mb-1">
+                                        <i class="bi bi-geo-alt-fill me-2 text-danger"></i> @place.Name
+                                    </h5>
+                                    <p class="small text-muted mb-0">
+                                        <i class="bi bi-rulers me-1"></i> Distance: @place.Distance meters
+                                    </p>
+                                    <p class="small text-muted mb-0">
+                                        <i class="bi bi-clock me-1"></i> Timezone: @place.Timezone
+                                    </p>
+                                </div>
+                            </div>
 
-                <!-- Sugerencias relacionadas -->
-                @if (place.Suggestions != null && place.Suggestions.Any())
-                {
-                    <hr />
-                    <strong>Suggestions:</strong>
-                    <ul class="mt-2">
-                        @foreach (var suggestion in place.Suggestions)
-                        {
-                            <li>
-                                <p class="mb-0">@suggestion.Content</p>
-                                <small class="text-muted">
-                                    By @(suggestion.UserId == 0 ? "Anonymous" : $"User #{suggestion.UserId}") on @suggestion.CreatedAt.ToString("g")
-                                </small>
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted mt-2">No suggestions available.</p>
-                }
-            </li>
-        }
-    </ul>
+                            <!-- Sección de sugerencias -->
+                            @if (place.Suggestions != null && place.Suggestions.Any())
+                            {
+                                <h6 class="text-secondary fw-semibold mt-3">💬 Suggestions</h6>
+                                <div class="mt-2 border-top pt-2">
+                                    @foreach (var suggestion in place.Suggestions)
+                                    {
+                                        <div class="alert bg-light text-dark shadow-sm p-2 rounded-3 mb-2">
+                                            <p class="mb-1"><i class="bi bi-chat-left-text text-primary me-1"></i> @suggestion.Content</p>
+                                            <small class="text-muted">
+                                                By @(suggestion.UserId == 0 ? "Anonymous" : $"User #{suggestion.UserId}")
+                                                · @suggestion.CreatedAt.ToString("g")
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mt-3"><em>No suggestions available for this place.</em></p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 }
 else
 {
-    <p>No saved places found.</p>
+    <div class="text-center py-5">
+        <i class="bi bi-heartbreak text-danger" style="font-size: 3rem;"></i>
+        <h4 class="text-muted mt-3">No saved places found.</h4>
+        <p class="text-secondary">Start exploring and save your favorite places!</p>
+    </div>
 }
