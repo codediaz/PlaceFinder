@@ -10,6 +10,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                   
                     // Encuentra y cierra el modal
                     const modalElement = document.getElementById('authModal');
                     const modal = bootstrap.Modal.getInstance(modalElement);
@@ -79,4 +80,16 @@ function loadRegister() {
             document.getElementById('authModalLabel').innerText = 'Register';
             document.getElementById('authModalBody').innerHTML = html;
         });
+}
+
+function showFeedbackMessage(type, message) {
+    const container = document.getElementById("feedbackMessage");
+    container.innerHTML = `
+        <div class="alert alert-${type === "success" ? "success" : "danger"} alert-dismissible fade show" role="alert">
+            <i class="bi ${type === "success" ? "bi-check-circle" : "bi-exclamation-triangle"}"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    setTimeout(() => container.innerHTML = "", 5000); // Desaparece después de 5 segundos
 }
