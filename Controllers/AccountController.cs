@@ -78,30 +78,29 @@ namespace PlaceFinder.Controllers
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                ViewBag.Error = "Username and password are required.";
-                return PartialView();
+                return Json(new { success = false, error = "Username and password are required." });
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Username == username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                ViewBag.Error = "Invalid username or password.";
-                return PartialView();
+                return Json(new { success = false, error = "Invalid username or password." });
             }
 
             // Autenticar al usuario
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-    };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
 
             var claimsIdentity = new ClaimsIdentity(claims, "login");
             await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity));
 
             return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
+
 
 
         // Logout

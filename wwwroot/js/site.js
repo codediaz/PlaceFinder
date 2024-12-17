@@ -10,10 +10,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Cerrar modal y redirigir siempre a Home
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
-                    modal.hide();
-                    window.location.href = data.redirectUrl; // Redirige a Home
+                    // Encuentra y cierra el modal
+                    const modalElement = document.getElementById('authModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                        document.getElementById('authModalBody').innerHTML = "";
+                    }
+
+                    // Redirige al usuario a la página principal
+                    location.href = data.redirectUrl || "/";
                 } else {
                     // Mostrar error en el formulario
                     document.getElementById("loginError").innerText = data.error || "Invalid credentials.";
@@ -28,33 +34,15 @@
     }
 });
 
-
-function loadLogin() {
-    fetch('/Account/Login')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('authModalLabel').innerText = 'Login';
-            document.getElementById('authModalBody').innerHTML = html;
-        });
-}
-
-function loadRegister() {
-    fetch('/Account/Register')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('authModalLabel').innerText = 'Register';
-            document.getElementById('authModalBody').innerHTML = html;
-        });
-}
-
 function handleFavoritesClick() {
     fetch('/Places/GetFavorites', { method: 'GET' })
         .then(response => {
             if (response.status === 401) {
-                // Usuario no autenticado
-                alert("You need to log in or register to view your favorites.");
-                loadLogin(); // Abre el modal de login
-                return;
+                // Usuario no autenticado - abrir modal de login
+                loadLogin();
+                const modal = new bootstrap.Modal(document.getElementById('authModal'));
+                modal.show();
+                return; // Termina aquí si no está autenticado
             }
             return response.text();
         })
@@ -68,5 +56,27 @@ function handleFavoritesClick() {
         .catch(error => {
             console.error("Error fetching favorites:", error);
             alert("An unexpected error occurred.");
+        });
+}
+
+function loadLogin() {
+    fetch('/Account/Login')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('authModalLabel').innerText = 'Login';
+            document.getElementById('authModalBody').innerHTML = html;
+        })
+        .catch(error => {
+            console.error("Error loading login form:", error);
+            alert("Failed to load the login form.");
+        });
+}
+
+function loadRegister() {
+    fetch('/Account/Register')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('authModalLabel').innerText = 'Register';
+            document.getElementById('authModalBody').innerHTML = html;
         });
 }
